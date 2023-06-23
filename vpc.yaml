@@ -1,8 +1,6 @@
 Parameters:
   igwID:
     Type: String
-  myRT:
-    Type: String
 Resources:
   myVPC:
     Type: AWS::EC2::VPC
@@ -21,8 +19,22 @@ Resources:
     Properties:
       VpcId: !Ref myVPC
       InternetGatewayId: !Ref igwID
-  sub1RouteTableAssociation:
+  MyRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref myVPC
+      Tags:
+        - Key: Name
+          Value: MyRouteTable
+  MyRoute:
+    Type: AWS::EC2::Route
+    DependsOn: myIGWattach
+    Properties:
+      RouteTableId: !Ref MyRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref igwID
+  MySubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref sub1
-      RouteTableId: !Ref myRT
+      RouteTableId: !Ref MyRouteTable
